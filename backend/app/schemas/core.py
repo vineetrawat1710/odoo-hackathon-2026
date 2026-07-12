@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime, date
+import re
 from app.models.core import VehicleStatus, VehicleType, DriverStatus, LicenseCategory, MaintenanceStatus
 
 class VehicleBase(BaseModel):
@@ -30,6 +31,18 @@ class DriverBase(BaseModel):
     license_category: LicenseCategory
     license_expiry_date: date
     contact_number: str
+
+    @field_validator("license_number")
+    @classmethod
+    def validate_license_number(cls, value: str) -> str:
+        val = value.strip().upper()
+        if len(val) < 8 or len(val) > 25:
+            raise ValueError("Driving license number must be between 8 and 25 characters long")
+        if not re.search(r"\d", val):
+            raise ValueError("Driving license number must contain at least one digit")
+        if not re.match(r"^[A-Z]{2,3}[-\s/]?([A-Z0-9-\s/]){5,22}$", val):
+            raise ValueError("Driving license must start with a 2-3 letter state/region code and contain valid alphanumeric characters (e.g., DL-04-2026-8888)")
+        return val
 
 class DriverCreate(DriverBase):
     pass

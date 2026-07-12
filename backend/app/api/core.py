@@ -6,9 +6,9 @@ from app.api.deps import get_db, get_current_user, require_roles
 from app.schemas.core import Vehicle, VehicleCreate, Driver, DriverCreate, Maintenance, MaintenanceCreate
 from app.crud.crud_core import (
     create_vehicle, get_vehicles, get_vehicle_by_registration,
-    create_driver, get_drivers, get_driver, create_maintenance_log, get_vehicle, get_maintenance_log
+    create_driver, get_drivers, get_driver, create_maintenance_log, get_vehicle, get_maintenance_log, get_maintenance_logs
 )
-from app.models.core import VehicleStatus, MaintenanceStatus
+from app.models.core import Vehicle as VehicleModel, VehicleStatus, MaintenanceStatus
 
 router = APIRouter()
 
@@ -28,6 +28,7 @@ def read_vehicle(id: int, db: Session = Depends(get_db), current_user = Depends(
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return vehicle
+
 @router.post("/drivers", response_model=Driver, dependencies=[Depends(require_roles(["fleet_manager", "safety_officer"]))])
 def add_driver(driver: DriverCreate, db: Session = Depends(get_db)):
     return create_driver(db, driver=driver)
@@ -42,10 +43,15 @@ def read_driver(id: int, db: Session = Depends(get_db), current_user = Depends(g
     if not driver:
         raise HTTPException(status_code=404, detail="Driver not found")
     return driver
+
+@router.get("/maintenance", response_model=List[Maintenance])
+def read_maintenances(skip: int = 0, limit: int = 100, status: str = None, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    return get_maintenance_logs(db, skip=skip, limit=limit, status=status)
+
 @router.post("/maintenance", response_model=Maintenance, dependencies=[Depends(require_roles(["fleet_manager"]))], summary="Create Maintenance Log")
 def add_maintenance(maintenance: MaintenanceCreate, db: Session = Depends(get_db)):
     # Lock vehicle to prevent concurrent dispatch/maintenance actions
-    vehicle = db.query(Vehicle).filter(Vehicle.id == maintenance.vehicle_id).with_for_update().first()
+    vehicle = db.query(VehicleModel).filter(VehicleModel.id == maintenance.vehicle_id).with_for_update().first()
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     if vehicle.status == VehicleStatus.ON_TRIP:

@@ -43,5 +43,11 @@ def create_maintenance_log(db: Session, maintenance: MaintenanceCreate):
     db.flush() # flush to get the id without committing
     return db_log
 
+def get_maintenance_logs(db: Session, skip: int = 0, limit: int = 100, status: str = None):
+    query = db.query(MaintenanceLog)
+    if status:
+        query = query.filter(MaintenanceLog.status == status)
+    return query.order_by(MaintenanceLog.created_at.desc()).offset(skip).limit(limit).all()
+
 def get_maintenance_log(db: Session, maintenance_id: int):
     return db.query(MaintenanceLog).filter(MaintenanceLog.id == maintenance_id).first()
