@@ -14,8 +14,16 @@ from app.models.core import Vehicle, Driver, VehicleStatus, DriverStatus, Mainte
 router = APIRouter()
 
 # --- Expenses ---
-@router.post("/expenses", response_model=Expense, dependencies=[Depends(require_roles(["fleet_manager", "dispatcher"]))])
+@router.post("/expenses", response_model=Expense, dependencies=[Depends(require_roles(["fleet_manager", "dispatcher", "financial_analyst"]))])
 def add_expense(expense: ExpenseCreate, db: Session = Depends(get_db)):
+    if expense.vehicle_id:
+        vehicle = db.query(Vehicle).filter(Vehicle.id == expense.vehicle_id).first()
+        if not vehicle:
+            raise HTTPException(status_code=404, detail="Vehicle not found")
+    if expense.trip_id:
+        trip = db.query(Trip).filter(Trip.id == expense.trip_id).first()
+        if not trip:
+            raise HTTPException(status_code=404, detail="Trip not found")
     return create_expense(db, expense)
 
 @router.get("/expenses", response_model=List[Expense])
@@ -30,8 +38,11 @@ def read_expense(id: int, db: Session = Depends(get_db), current_user=Depends(ge
     return expense
 
 # --- Fuel Logs ---
-@router.post("/fuel-logs", response_model=FuelLog, dependencies=[Depends(require_roles(["fleet_manager", "dispatcher"]))])
+@router.post("/fuel-logs", response_model=FuelLog, dependencies=[Depends(require_roles(["fleet_manager", "dispatcher", "financial_analyst"]))])
 def add_fuel_log(fuel_log: FuelLogCreate, db: Session = Depends(get_db)):
+    vehicle = db.query(Vehicle).filter(Vehicle.id == fuel_log.vehicle_id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
     return create_fuel_log(db, fuel_log)
 
 @router.get("/fuel-logs", response_model=List[FuelLog])

@@ -14,11 +14,14 @@ def validate_and_create_trip(db: Session, trip: TripCreate, user_id: int):
     if not vehicle or not driver:
         raise HTTPException(status_code=404, detail="Vehicle or Driver not found")
         
+    if vehicle.status != VehicleStatus.AVAILABLE:
+        raise HTTPException(status_code=400, detail="Vehicle is not available")
+        
     if trip.cargo_weight > vehicle.max_load_capacity:
         raise HTTPException(status_code=400, detail=f"Cargo weight exceeds vehicle capacity of {vehicle.max_load_capacity}")
         
-    if driver.status == DriverStatus.SUSPENDED:
-        raise HTTPException(status_code=400, detail="Driver is suspended")
+    if driver.status != DriverStatus.AVAILABLE:
+        raise HTTPException(status_code=400, detail="Driver is not available")
         
     # Check license expiration correctly
     if driver.license_expiry_date < date.today():
