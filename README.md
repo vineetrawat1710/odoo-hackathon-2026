@@ -15,7 +15,7 @@ TransitOps is a scalable, open-source Fleet Management & Transport Operations pl
 
 ## 🛠 Tech Stack
 - **Database:** PostgreSQL (Strict Relational Schema, 3NF)
-- **Backend:** FastAPI REST API (or Express.js)
+- **Backend:** FastAPI REST API (SQLAlchemy ORM, Pydantic validation, JWT Authentication)
 - **Frontend:** React + Vite + Tailwind CSS + Recharts
 
 ## 🗄️ Database Architecture
@@ -33,6 +33,16 @@ Our database (`schema.sql`) is engineered specifically for **scalability, financ
 Ensure you have PostgreSQL installed. Run the initialization script to generate the tables, enums, constraints, and indexes:
 ```bash
 psql -U your_postgres_user -d your_database_name -f schema.sql
+```
+
+### 2. Backend Setup
+Navigate into the `backend` folder and start the FastAPI server:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 
 ## 👥 Roles & Permissions (RBAC)
