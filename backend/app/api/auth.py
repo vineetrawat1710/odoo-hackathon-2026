@@ -1,17 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user
-from app.crud.crud_user import get_user_by_email
+from app.crud.crud_user import get_user_by_email, create_user
 from app.core.security import verify_password, create_access_token
-from app.schemas.user import Token, User
+from app.schemas.user import Token, User, UserCreate, UserLogin
 
 router = APIRouter()
 
+@router.post("/signup", response_model=User)
+def signup(user_in: UserCreate, db: Session = Depends(get_db)):
+    user = get_user_by_email(db, email=user_in.email)
+    if user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return create_user(db, user_in)
+
 @router.post("/login", response_model=Token)
-def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = get_user_by_email(db, email=form_data.username)
-    if not user or not verify_password(form_data.password, user.password_hash):
+def login_access_token(user_credentials: UserLogin, db: Session = Depends(get_db)):
+    user = get_user_by_email(db, email=user_credentials.email)
+    if not user or not verify_password(user_credentials.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     
     access_token = create_access_token(data={"sub": user.email, "role": user.role.value})

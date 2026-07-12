@@ -11,6 +11,10 @@ class UserCreate(UserBase):
     password: str
     role: RoleEnum
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 class User(UserBase):
     id: int
     role: RoleEnum
