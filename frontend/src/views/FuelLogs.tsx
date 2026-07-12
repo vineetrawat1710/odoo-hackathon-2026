@@ -139,11 +139,11 @@ export const FuelLogs: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Fuel Amount (L) *</label>
-              <input type="number" className={inputClass} value={form.liters} onChange={e => setForm({ ...form, liters: Number(e.target.value) })} />
+              <input type="number" className={inputClass} placeholder="e.g. 150" value={form.liters === 0 ? '' : form.liters} onChange={e => setForm({ ...form, liters: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
             <div>
               <label className={labelClass}>Cost (₹) *</label>
-              <input type="number" className={inputClass} value={form.cost} onChange={e => setForm({ ...form, cost: Number(e.target.value) })} />
+              <input type="number" className={inputClass} placeholder="e.g. 14200" value={form.cost === 0 ? '' : form.cost} onChange={e => setForm({ ...form, cost: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
           </div>
         </div>

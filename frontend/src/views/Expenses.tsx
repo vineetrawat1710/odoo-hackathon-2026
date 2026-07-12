@@ -169,7 +169,7 @@ export const Expenses: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Amount (₹) *</label>
-            <input type="number" className={inputClass} value={form.amount} onChange={e => setForm({ ...form, amount: Number(e.target.value) })} />
+            <input type="number" className={inputClass} placeholder="e.g. 8500" value={form.amount === 0 ? '' : form.amount} onChange={e => setForm({ ...form, amount: e.target.value === '' ? 0 : Number(e.target.value) })} />
           </div>
         </div>
       </Dialog>

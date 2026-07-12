@@ -283,8 +283,8 @@ export const Trips: React.FC = () => {
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className={labelClass}>Weight (Tons)</label>
-              <input type="number" className={`${inputClass} ${isOverweight ? 'border-rose-300 focus:ring-rose-500 bg-rose-50' : ''}`} value={form.cargo_weight} onChange={e => setForm({ ...form, cargo_weight: Number(e.target.value) })} />
+              <label className={labelClass}>Weight (Tons) *</label>
+              <input type="number" className={`${inputClass} ${isOverweight ? 'border-rose-300 focus:ring-rose-500 bg-rose-50' : ''}`} placeholder="e.g. 15" value={form.cargo_weight === 0 ? '' : form.cargo_weight} onChange={e => setForm({ ...form, cargo_weight: e.target.value === '' ? 0 : Number(e.target.value) })} />
               {selectedVehicle && (
                 <p className={`text-[10px] mt-1 font-medium ${isOverweight ? 'text-rose-600' : 'text-slate-500'}`}>
                   Max capacity: {maxCapacity} Tons
@@ -292,12 +292,12 @@ export const Trips: React.FC = () => {
               )}
             </div>
             <div>
-              <label className={labelClass}>Distance (km)</label>
-              <input type="number" className={inputClass} value={form.planned_distance} onChange={e => setForm({ ...form, planned_distance: Number(e.target.value) })} />
+              <label className={labelClass}>Distance (km) *</label>
+              <input type="number" className={inputClass} placeholder="e.g. 280" value={form.planned_distance === 0 ? '' : form.planned_distance} onChange={e => setForm({ ...form, planned_distance: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
             <div>
               <label className={labelClass}>Revenue (₹)</label>
-              <input type="number" className={inputClass} value={form.revenue} onChange={e => setForm({ ...form, revenue: Number(e.target.value) })} />
+              <input type="number" className={inputClass} placeholder="e.g. 45000" value={form.revenue === 0 ? '' : form.revenue} onChange={e => setForm({ ...form, revenue: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
           </div>
         </div>

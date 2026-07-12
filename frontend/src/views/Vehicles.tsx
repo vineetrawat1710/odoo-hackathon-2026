@@ -183,11 +183,11 @@ export const Vehicles: React.FC = () => {
         <div className="space-y-4">
           <div>
             <label className={labelClass}>Registration Number *</label>
-            <input className={inputClass} placeholder="MH12AB4567" value={form.registration_number} onChange={e => setForm({ ...form, registration_number: e.target.value })} />
+            <input className={inputClass} placeholder="KA-01-EQ-9999" value={form.registration_number} onChange={e => setForm({ ...form, registration_number: e.target.value })} />
           </div>
           <div>
             <label className={labelClass}>Vehicle Name *</label>
-            <input className={inputClass} placeholder="Tata Prima 5530" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            <input className={inputClass} placeholder="Tata Prima 2026" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -199,18 +199,18 @@ export const Vehicles: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Max Load Capacity (kg)</label>
-              <input type="number" className={inputClass} value={form.max_load_capacity} onChange={e => setForm({ ...form, max_load_capacity: Number(e.target.value) })} />
+              <label className={labelClass}>Max Load Capacity (kg) *</label>
+              <input type="number" className={inputClass} placeholder="e.g. 25000" value={form.max_load_capacity === 0 ? '' : form.max_load_capacity} onChange={e => setForm({ ...form, max_load_capacity: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Acquisition Cost (₹)</label>
-              <input type="number" className={inputClass} value={form.acquisition_cost} onChange={e => setForm({ ...form, acquisition_cost: Number(e.target.value) })} />
+              <label className={labelClass}>Acquisition Cost (₹) *</label>
+              <input type="number" className={inputClass} placeholder="e.g. 4500000" value={form.acquisition_cost === 0 ? '' : form.acquisition_cost} onChange={e => setForm({ ...form, acquisition_cost: e.target.value === '' ? 0 : Number(e.target.value) })} />
             </div>
             <div>
               <label className={labelClass}>Region</label>
-              <input type="text" className={inputClass} value={form.region} onChange={e => setForm({ ...form, region: e.target.value })} />
+              <input type="text" className={inputClass} placeholder="e.g. North Zone" value={form.region} onChange={e => setForm({ ...form, region: e.target.value })} />
             </div>
           </div>
         </div>
