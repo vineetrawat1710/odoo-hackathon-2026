@@ -42,16 +42,23 @@ def read_driver(id: int, db: Session = Depends(get_db), current_user = Depends(g
     if not driver:
         raise HTTPException(status_code=404, detail="Driver not found")
     return driver
-@router.post("/maintenance", response_model=Maintenance, dependencies=[Depends(require_roles(["fleet_manager"]))])
+@router.post("/maintenance", response_model=Maintenance, dependencies=[Depends(require_roles(["fleet_manager"]))], summary="Create Maintenance Log")
 def add_maintenance(maintenance: MaintenanceCreate, db: Session = Depends(get_db)):
     vehicle = get_vehicle(db, maintenance.vehicle_id)
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
-    if vehicle.status == VehicleStatus.OnTrip:
+    if vehicle.status == VehicleStatus.ON_TRIP:
         raise HTTPException(status_code=400, detail="Cannot perform maintenance on vehicle currently on trip")
         
-    vehicle.status = VehicleStatus.InShop
-    return create_maintenance_log(db, maintenance=maintenance)
+    try:
+        vehicle.status = VehicleStatus.IN_SHOP
+        db_log = create_maintenance_log(db, maintenance=maintenance)
+        db.commit()
+        db.refresh(db_log)
+        return db_log
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/maintenance/{id}", response_model=Maintenance)
 def read_maintenance(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -60,20 +67,24 @@ def read_maintenance(id: int, db: Session = Depends(get_db), current_user = Depe
         raise HTTPException(status_code=404, detail="Maintenance log not found")
     return maintenance
 
-@router.post("/maintenance/{id}/close", response_model=Maintenance, dependencies=[Depends(require_roles(["fleet_manager"]))])
+@router.post("/maintenance/{id}/close", response_model=Maintenance, dependencies=[Depends(require_roles(["fleet_manager"]))], summary="Close Maintenance Log")
 def close_maintenance(id: int, db: Session = Depends(get_db)):
     maintenance = get_maintenance_log(db, id)
     if not maintenance:
         raise HTTPException(status_code=404, detail="Maintenance log not found")
-    if maintenance.status == MaintenanceStatus.Closed:
+    if maintenance.status == MaintenanceStatus.CLOSED:
         raise HTTPException(status_code=400, detail="Maintenance log already closed")
     
-    vehicle = get_vehicle(db, maintenance.vehicle_id)
-    if vehicle:
-        vehicle.status = VehicleStatus.Available
-    
-    maintenance.status = MaintenanceStatus.Closed
-    maintenance.closed_at = datetime.utcnow()
-    db.commit()
-    db.refresh(maintenance)
-    return maintenance
+    try:
+        vehicle = get_vehicle(db, maintenance.vehicle_id)
+        if vehicle:
+            vehicle.status = VehicleStatus.AVAILABLE
+        
+        maintenance.status = MaintenanceStatus.CLOSED
+        maintenance.closed_at = datetime.utcnow()
+        db.commit()
+        db.refresh(maintenance)
+        return maintenance
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))

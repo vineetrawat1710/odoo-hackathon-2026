@@ -10,14 +10,14 @@ class TripBase(BaseModel):
     driver_id: int
     cargo_weight: float = Field(..., gt=0)
     planned_distance: float = Field(..., gt=0)
-    revenue: float = 0.0
+    revenue: float = Field(0.0, ge=0)
 
 class TripCreate(TripBase):
     pass
 
 class TripComplete(BaseModel):
-    actual_distance: float
-    end_odometer: float
+    actual_distance: float = Field(..., gt=0)
+    end_odometer: float = Field(..., ge=0)
 
 class Trip(TripBase):
     id: int

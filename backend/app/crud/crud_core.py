@@ -40,8 +40,7 @@ def get_driver(db: Session, driver_id: int):
 def create_maintenance_log(db: Session, maintenance: MaintenanceCreate):
     db_log = MaintenanceLog(**maintenance.model_dump())
     db.add(db_log)
-    db.commit()
-    db.refresh(db_log)
+    db.flush() # flush to get the id without committing
     return db_log
 
 def get_maintenance_log(db: Session, maintenance_id: int):

@@ -27,6 +27,15 @@ Our database (`schema.sql`) is engineered specifically for **scalability, financ
 
 *See the `schema.sql` file in this repository for the complete database initialization script.*
 
+## ⚙️ Backend Architecture
+The backend is built with **FastAPI, SQLAlchemy 2.0, and Pydantic v2**, designed for high performance, transaction safety, and clean separation of concerns.
+
+- **Domain-Grouped Structure:** Routes, schemas, and models are flattened by domain (core, finance, trip) to prevent circular imports and allow rapid feature development.
+- **Transactional Integrity:** State machine transitions (e.g., dispatching a trip, logging maintenance) are wrapped in strict `try...except` SQLAlchemy transactional blocks. This prevents partial state corruption (e.g., a vehicle getting locked in `IN_SHOP` status if a maintenance log insertion fails).
+- **Advanced DB Aggregations:** The Analytics Dashboard performs multi-table KPI aggregation (Fleet Utilization, Vehicle ROI, Fuel Efficiency) directly in PostgreSQL. By using optimized `func.sum` and constant O(1) `group_by` queries, the system completely avoids N+1 problems in Python.
+- **Robust Exception Handling:** Pydantic Field boundaries (e.g., `gt=0` for distances/weights) enforce data sanity before reaching the database. SQLAlchemy `IntegrityError` constraints are intercepted by a global exception handler and cleanly returned as HTTP 400 Bad Requests.
+- **Stateless RBAC:** JSON Web Tokens (JWTs) track and authenticate specific roles (Fleet Manager, Dispatcher, Safety Officer, Financial Analyst) via route dependencies.
+
 ## 🚀 Quick Start
 
 ### 1. Database Setup
