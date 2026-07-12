@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   Truck, Users, Navigation, Wrench, TrendingUp, IndianRupee,
-  Activity, BarChart3, CheckCircle
+  Activity, BarChart3, CheckCircle, Clock, Fuel, Filter
 } from 'lucide-react';
 import {
   BarChart, Bar,
@@ -20,6 +20,11 @@ export const Dashboard: React.FC = () => {
   const [recentTrips, setRecentTrips] = useState<Trip[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Filters for Section 3.2 requirement
+  const [filterType, setFilterType] = useState<string>('ALL');
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [filterRegion, setFilterRegion] = useState<string>('ALL');
 
   const loadData = async () => {
     setLoading(true);
@@ -40,6 +45,16 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => { loadData(); }, []);
 
+  const filteredVehicles = useMemo(() => {
+    return vehicles.filter(v => {
+      const matchType = filterType === 'ALL' || v.type?.toUpperCase() === filterType;
+      const matchStatus = filterStatus === 'ALL' || v.status?.toUpperCase() === filterStatus;
+      // Mock region matching based on registration number prefix or region
+      const matchRegion = filterRegion === 'ALL' || (v.registration_number && v.registration_number.toUpperCase().includes(filterRegion));
+      return matchType && matchStatus && matchRegion;
+    });
+  }, [vehicles, filterType, filterStatus, filterRegion]);
+
   if (loading || !data) {
     return (
       <div className="space-y-6">
@@ -54,30 +69,90 @@ export const Dashboard: React.FC = () => {
   }
 
   const kpiCards = [
-    { label: 'Total Vehicles', value: data.total_vehicles, icon: Truck, color: 'text-slate-700', bg: 'bg-slate-50' },
-    { label: 'Available', value: data.available_vehicles, icon: CheckCircle, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'On Trip', value: data.vehicles_on_trip, icon: Navigation, color: 'text-indigo-700', bg: 'bg-indigo-50' },
-    { label: 'In Shop', value: data.vehicles_in_shop, icon: Wrench, color: 'text-amber-700', bg: 'bg-amber-50' },
+    { label: 'Active Vehicles', value: data.vehicles_on_trip, icon: Navigation, color: 'text-indigo-700', bg: 'bg-indigo-50' },
+    { label: 'Available Vehicles', value: data.available_vehicles, icon: CheckCircle, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+    { label: 'In Maintenance', value: data.vehicles_in_shop, icon: Wrench, color: 'text-amber-700', bg: 'bg-amber-50' },
     { label: 'Active Trips', value: data.active_trips, icon: Activity, color: 'text-indigo-700', bg: 'bg-indigo-50' },
-    { label: 'Available Drivers', value: data.available_drivers, icon: Users, color: 'text-cyan-700', bg: 'bg-cyan-50' },
+    { label: 'Pending Trips', value: data.pending_trips || 0, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-50' },
+    { label: 'Drivers On Duty', value: data.drivers_on_duty || data.available_drivers, icon: Users, color: 'text-cyan-700', bg: 'bg-cyan-50' },
     { label: 'Fleet Utilization', value: `${data.fleet_utilization}%`, icon: TrendingUp, color: 'text-violet-700', bg: 'bg-violet-50' },
-    { label: 'Revenue', value: `₹${(data.total_revenue / 1000).toFixed(1)}K`, icon: IndianRupee, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+    { label: 'Fuel Efficiency', value: `${data.fuel_efficiency} km/L`, icon: Fuel, color: 'text-teal-700', bg: 'bg-teal-50' },
     { label: 'Operational Cost', value: `₹${(data.operational_cost / 1000).toFixed(1)}K`, icon: BarChart3, color: 'text-rose-700', bg: 'bg-rose-50' },
     { label: 'Avg. Vehicle ROI', value: `${data.vehicle_roi}%`, icon: TrendingUp, color: 'text-indigo-700', bg: 'bg-indigo-50' },
   ];
 
-  const getVehicleReg = (id: number) => vehicles.find(v => v.id === id)?.registration_number || `ID: ${id}`;
-
-  const roiChartData = Object.entries(data.individual_vehicle_rois || {}).map(([vid, roi]) => ({
-    plateNumber: getVehicleReg(Number(vid)),
-    roi: roi
+  const roiChartData = filteredVehicles.map(v => ({
+    plateNumber: v.registration_number,
+    roi: data.individual_vehicle_rois?.[v.id] ?? 0
   }));
-
-
 
   return (
     <div className="space-y-6">
+      {/* Dashboard Filters Bar (Requirement 3.2) */}
+      <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm">
+        <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <Filter className="h-4 w-4 text-indigo-600" />
+            <span>Dashboard Filters:</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-slate-500 font-medium">Type:</label>
+              <select 
+                value={filterType} 
+                onChange={e => setFilterType(e.target.value)}
+                className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="ALL">All Types</option>
+                <option value="TRUCK">Truck</option>
+                <option value="VAN">Van</option>
+                <option value="BIKE">Bike</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-slate-500 font-medium">Status:</label>
+              <select 
+                value={filterStatus} 
+                onChange={e => setFilterStatus(e.target.value)}
+                className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="AVAILABLE">Available</option>
+                <option value="ON_TRIP">On Trip</option>
+                <option value="IN_SHOP">In Shop</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-slate-500 font-medium">Region:</label>
+              <select 
+                value={filterRegion} 
+                onChange={e => setFilterRegion(e.target.value)}
+                className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="ALL">All Regions</option>
+                <option value="DL">Delhi (DL)</option>
+                <option value="MH">Maharashtra (MH)</option>
+                <option value="KA">Karnataka (KA)</option>
+                <option value="TN">Tamil Nadu (TN)</option>
+              </select>
+            </div>
+
+            {(filterType !== 'ALL' || filterStatus !== 'ALL' || filterRegion !== 'ALL') && (
+              <button 
+                onClick={() => { setFilterType('ALL'); setFilterStatus('ALL'); setFilterRegion('ALL'); }}
+                className="text-xs text-indigo-600 font-medium hover:underline ml-1"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* KPI Cards */}
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {kpiCards.map((kpi, idx) => {
           const Icon = kpi.icon;

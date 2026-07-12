@@ -29,6 +29,31 @@ def read_vehicle(id: int, db: Session = Depends(get_db), current_user = Depends(
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return vehicle
 
+@router.patch("/vehicles/{id}/retire", response_model=Vehicle, dependencies=[Depends(require_roles(["fleet_manager"]))])
+def retire_vehicle(id: int, db: Session = Depends(get_db)):
+    vehicle = get_vehicle(db, id)
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    if vehicle.status == VehicleStatus.ON_TRIP:
+        raise HTTPException(status_code=400, detail="Cannot retire a vehicle that is currently on trip")
+    vehicle.status = VehicleStatus.RETIRED
+    db.commit()
+    db.refresh(vehicle)
+    return vehicle
+
+@router.patch("/vehicles/{id}/status", response_model=Vehicle, dependencies=[Depends(require_roles(["fleet_manager", "dispatcher"]))])
+def update_vehicle_status(id: int, status: str, db: Session = Depends(get_db)):
+    vehicle = get_vehicle(db, id)
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    try:
+        vehicle.status = VehicleStatus(status.upper())
+        db.commit()
+        db.refresh(vehicle)
+        return vehicle
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid status value: {status}")
+
 @router.post("/drivers", response_model=Driver, dependencies=[Depends(require_roles(["fleet_manager", "safety_officer"]))])
 def add_driver(driver: DriverCreate, db: Session = Depends(get_db)):
     return create_driver(db, driver=driver)
@@ -60,12 +85,14 @@ def add_maintenance(maintenance: MaintenanceCreate, db: Session = Depends(get_db
     try:
         vehicle.status = VehicleStatus.IN_SHOP
         db_log = create_maintenance_log(db, maintenance=maintenance)
+        db_log.status = MaintenanceStatus.OPEN
         db.commit()
         db.refresh(db_log)
         return db_log
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @router.get("/maintenance/{id}", response_model=Maintenance)
 def read_maintenance(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):

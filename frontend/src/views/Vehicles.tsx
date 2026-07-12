@@ -68,7 +68,31 @@ export const Vehicles: React.FC = () => {
     setSaving(false);
   };
 
+  const handleRetire = async (id: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      await vehicleService.retireVehicle(id);
+      success('Vehicle marked as RETIRED.');
+      setDrawerVehicle(null);
+      loadData();
+    } catch (e: any) {
+      error(e.message || 'Failed to retire vehicle');
+    }
+  };
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      await vehicleService.updateVehicleStatus(id, newStatus);
+      success(`Vehicle status updated to ${newStatus}.`);
+      setDrawerVehicle(null);
+      loadData();
+    } catch (e: any) {
+      error(e.message || 'Failed to update status');
+    }
+  };
+
   const inputClass = 'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all';
+
   const labelClass = 'block text-xs font-semibold text-slate-700 mb-1';
 
   if (loading) {
@@ -121,7 +145,18 @@ export const Vehicles: React.FC = () => {
                       <p className="text-xs text-slate-500">{v.name}</p>
                     </div>
                   </div>
-                  <StatusBadge status={v.status} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={v.status} />
+                    {v.status !== 'RETIRED' && v.status !== 'ON_TRIP' && (
+                      <button
+                        onClick={(e) => handleRetire(v.id, e)}
+                        className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors"
+                        title="Retire Vehicle"
+                      >
+                        Retire
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100">
                   <div>
@@ -153,7 +188,7 @@ export const Vehicles: React.FC = () => {
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Capacity</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Odometer</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3"></th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -165,10 +200,21 @@ export const Vehicles: React.FC = () => {
                     <td className="px-6 py-3.5 text-slate-600">{v.max_load_capacity} kg</td>
                     <td className="px-6 py-3.5 text-slate-600">{Number(v.odometer).toLocaleString()} km</td>
                     <td className="px-6 py-3.5"><StatusBadge status={v.status} /></td>
-                    <td className="px-6 py-3.5"><ChevronRight className="h-4 w-4 text-slate-400" /></td>
+                    <td className="px-6 py-3.5 text-right flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                      {v.status !== 'RETIRED' && v.status !== 'ON_TRIP' && (
+                        <button
+                          onClick={(e) => handleRetire(v.id, e)}
+                          className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors"
+                        >
+                          Retire
+                        </button>
+                      )}
+                      <ChevronRight className="h-4 w-4 text-slate-400 cursor-pointer" onClick={() => setDrawerVehicle(v)} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </Card>
@@ -250,6 +296,32 @@ export const Vehicles: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wide">Change Vehicle Status</h4>
+                <div className="flex items-center gap-2">
+                  <select
+                    className="flex-1 px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={drawerVehicle.status}
+                    onChange={(e) => handleStatusChange(drawerVehicle.id, e.target.value)}
+                    disabled={drawerVehicle.status === 'ON_TRIP'}
+                  >
+                    <option value="AVAILABLE">AVAILABLE</option>
+                    <option value="IN_SHOP">IN_SHOP</option>
+                    <option value="RETIRED">RETIRED</option>
+                  </select>
+                </div>
+
+                {drawerVehicle.status !== 'RETIRED' && drawerVehicle.status !== 'ON_TRIP' && (
+                  <Button
+                    variant="outline"
+                    className="w-full text-rose-600 border-rose-200 hover:bg-rose-50 font-bold"
+                    onClick={() => handleRetire(drawerVehicle.id)}
+                  >
+                    Retire Vehicle
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -257,3 +329,4 @@ export const Vehicles: React.FC = () => {
     </div>
   );
 };
+

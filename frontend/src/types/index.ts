@@ -88,7 +88,9 @@ export interface DashboardDTO {
   vehicles_in_shop: number;
   total_drivers: number;
   available_drivers: number;
+  drivers_on_duty: number;
   active_trips: number;
+  pending_trips: number;
   completed_trips: number;
   fleet_utilization: number;
   fuel_efficiency: number;
@@ -97,3 +99,4 @@ export interface DashboardDTO {
   total_revenue: number;
   individual_vehicle_rois: Record<string, number>;
 }
+

@@ -53,11 +53,13 @@ export const Maintenance: React.FC = () => {
     return v ? `${v.registration_number} (${v.name})` : `Vehicle #${vid}`;
   };
 
+  const isOpen = (st: string) => st === 'OPEN' || st === 'ACTIVE' || st !== 'CLOSED';
+
   const filteredLogs = logs.filter(log => {
     const reg = getVehicleReg(log.vehicle_id).toLowerCase();
     const desc = (log.description || '').toLowerCase();
     const matchSearch = reg.includes(search.toLowerCase()) || desc.includes(search.toLowerCase()) || log.type.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === 'all' || log.status === statusFilter;
+    const matchStatus = statusFilter === 'all' || (statusFilter === 'OPEN' && isOpen(log.status)) || (statusFilter === 'CLOSED' && log.status === 'CLOSED');
     return matchSearch && matchStatus;
   });
 
@@ -95,8 +97,9 @@ export const Maintenance: React.FC = () => {
   };
 
   const totalCost = logs.reduce((acc, curr) => acc + Number(curr.cost || 0), 0);
-  const openCount = logs.filter(l => l.status === 'OPEN').length;
+  const openCount = logs.filter(l => isOpen(l.status)).length;
   const inShopVehicles = vehicles.filter(v => v.status === 'IN_SHOP').length;
+
 
   const inputClass = 'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all';
   const labelClass = 'block text-xs font-semibold text-slate-700 mb-1';
@@ -221,10 +224,10 @@ export const Maintenance: React.FC = () => {
                     <td className="px-6 py-3.5 text-slate-600 max-w-xs truncate">{log.description || 'General Service'}</td>
                     <td className="px-6 py-3.5 font-semibold text-slate-900">₹{Number(log.cost || 0).toLocaleString()}</td>
                     <td className="px-6 py-3.5">
-                      {log.status === 'OPEN' ? (
+                      {isOpen(log.status) ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                          In Shop (Open)
+                          In Shop (In Progress)
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -234,7 +237,7 @@ export const Maintenance: React.FC = () => {
                       )}
                     </td>
                     <td className="px-6 py-3.5 text-right">
-                      {log.status === 'OPEN' ? (
+                      {isOpen(log.status) ? (
                         <Button
                           size="sm"
                           className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
@@ -246,6 +249,7 @@ export const Maintenance: React.FC = () => {
                         <span className="text-xs text-slate-400 italic">Released to Fleet</span>
                       )}
                     </td>
+
                   </tr>
                 ))}
               </tbody>

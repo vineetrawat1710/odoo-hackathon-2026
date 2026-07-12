@@ -57,7 +57,9 @@ class Driver(Base):
 
 class MaintenanceStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
+    OPEN = "OPEN"
     CLOSED = "CLOSED"
+
 
 class MaintenanceLog(Base):
     id = Column(Integer, primary_key=True, index=True)
@@ -65,7 +67,8 @@ class MaintenanceLog(Base):
     type = Column(String, nullable=False)
     description = Column(String, nullable=True)
     cost = Column(Numeric(10, 2), default=0.0, nullable=False)
-    status = Column(SQLEnum(MaintenanceStatus), default=MaintenanceStatus.ACTIVE, nullable=False)
+    status = Column(SQLEnum(MaintenanceStatus), default=MaintenanceStatus.OPEN, nullable=False)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     closed_at = Column(DateTime(timezone=True), nullable=True)

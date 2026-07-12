@@ -66,10 +66,12 @@ def get_dashboard(db: Session = Depends(get_db), current_user=Depends(get_curren
 
     total_drivers = db.query(func.count(Driver.id)).scalar() or 0
     available_drivers = db.query(func.count(Driver.id)).filter(Driver.status == DriverStatus.AVAILABLE).scalar() or 0
+    drivers_on_duty = db.query(func.count(Driver.id)).filter(Driver.status.in_([DriverStatus.AVAILABLE, DriverStatus.ON_TRIP])).scalar() or 0
 
     total_trips = db.query(func.count(Trip.id)).scalar() or 0
     completed_trips = db.query(func.count(Trip.id)).filter(Trip.status == TripStatus.COMPLETED).scalar() or 0
     active_trips = db.query(func.count(Trip.id)).filter(Trip.status == TripStatus.DISPATCHED).scalar() or 0
+    pending_trips = db.query(func.count(Trip.id)).filter(Trip.status == TripStatus.DRAFT).scalar() or 0
 
     # Fleet Utilization
     fleet_utilization = round((on_trip_vehicles / total_vehicles * 100), 2) if total_vehicles > 0 else 0.0
@@ -114,7 +116,9 @@ def get_dashboard(db: Session = Depends(get_db), current_user=Depends(get_curren
         "vehicles_in_shop": vehicles_in_shop,
         "total_drivers": total_drivers,
         "available_drivers": available_drivers,
+        "drivers_on_duty": drivers_on_duty,
         "active_trips": active_trips,
+        "pending_trips": pending_trips,
         "completed_trips": completed_trips,
         "fleet_utilization": fleet_utilization,
         "fuel_efficiency": fuel_efficiency,
@@ -123,3 +127,4 @@ def get_dashboard(db: Session = Depends(get_db), current_user=Depends(get_curren
         "total_revenue": float(total_revenue),
         "individual_vehicle_rois": individual_rois
     }
+
