@@ -1,26 +1,20 @@
 import type { Vehicle } from '../types';
-import { DB } from '../mocks/db';
-
-const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms));
+import { apiClient } from './apiClient';
 
 export const vehicleService = {
   async getVehicles(): Promise<Vehicle[]> {
-    await delay();
-    return DB.getVehicles();
+    return apiClient.get<Vehicle[]>('/vehicles');
   },
 
-  async getVehicleById(id: string): Promise<Vehicle | undefined> {
-    await delay(500);
-    return DB.getVehicleById(id);
+  async getVehicleById(id: number): Promise<Vehicle | undefined> {
+    return apiClient.get<Vehicle>(`/vehicles/${id}`);
   },
 
-  async saveVehicle(vehicle: Vehicle): Promise<Vehicle> {
-    await delay(700);
-    return DB.saveVehicle(vehicle);
+  async saveVehicle(vehicle: Partial<Vehicle>): Promise<Vehicle> {
+    return apiClient.post<Vehicle>('/vehicles', vehicle);
   },
 
-  async deleteVehicle(id: string): Promise<void> {
-    await delay(600);
-    DB.deleteVehicle(id);
+  async deleteVehicle(id: number): Promise<void> {
+    return apiClient.delete(`/vehicles/${id}`);
   }
 };

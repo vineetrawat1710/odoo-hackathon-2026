@@ -1,112 +1,99 @@
 export interface Vehicle {
-  id: string;
-  plateNumber: string;
-  model: string;
-  type: 'Truck' | 'Trailer' | 'LCV' | 'Dumper';
-  status: 'available' | 'active' | 'maintenance';
-  fuelType: 'Diesel' | 'CNG' | 'Electric';
-  mileage: number; // in km
-  nextService: string; // date string
-  roi: number; // percentage
-  telemetry: {
-    speed: number; // km/h
-    fuelLevel: number; // percentage
-    batteryStatus: 'Good' | 'Fair' | 'Replace';
-    coolantTemp: number; // °C
-    latitude: number;
-    longitude: number;
-  };
+  id: number;
+  registration_number: string;
+  name: string;
+  type: 'TRUCK' | 'VAN' | 'CAR';
+  max_load_capacity: number;
+  acquisition_cost: number;
+  region?: string;
+  odometer: number;
+  status: 'AVAILABLE' | 'ON_TRIP' | 'IN_SHOP' | 'RETIRED';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Driver {
-  id: string;
+  id: number;
   name: string;
-  licenseNumber: string;
-  licenseStatus: 'valid' | 'warning' | 'expired';
-  status: 'active' | 'off-duty' | 'suspended';
-  phone: string;
-  rating: number; // 0.0 - 5.0
-  vehicleId?: string; // currently assigned vehicle
-  shift: 'Morning' | 'Evening' | 'Night';
+  license_number: string;
+  license_category: 'B' | 'C' | 'CE' | 'D';
+  license_expiry_date: string;
+  contact_number: string;
+  safety_score: number;
+  status: 'AVAILABLE' | 'ON_TRIP' | 'OFF_DUTY' | 'SUSPENDED';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Trip {
-  id: string;
-  tripNumber: string;
-  driverId: string;
-  driverName?: string;
-  vehicleId: string;
-  vehiclePlate?: string;
-  origin: string;
+  id: number;
+  source: string;
   destination: string;
-  cargo: string;
-  cargoWeight: number; // in tons
-  distance: number; // in km
-  revenue: number; // in INR
-  fuelCost: number; // in INR
-  otherExpenses: number; // in INR
-  status: 'scheduled' | 'active' | 'completed' | 'cancelled';
-  currentProgress: number; // 0 to 100 percentage
+  vehicle_id: number;
+  driver_id: number;
+  cargo_weight: number;
+  planned_distance: number;
+  actual_distance?: number;
+  revenue: number;
+  start_odometer?: number;
+  end_odometer?: number;
+  status: 'DRAFT' | 'DISPATCHED' | 'COMPLETED' | 'CANCELLED';
+  created_by_id?: number;
+  created_at: string;
+  updated_at: string;
+  dispatched_at?: string;
+  completed_at?: string;
+  cancelled_at?: string;
 }
 
 export interface FuelLog {
-  id: string;
-  vehicleId: string;
-  vehiclePlate?: string;
+  id: number;
+  vehicle_id: number;
+  trip_id?: number;
+  liters: number;
+  cost: number;
   date: string;
-  odometer: number; // in km
-  fuelAmount: number; // in liters
-  cost: number; // in INR
-  efficiency: number; // km/l or L/100km computed
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Expense {
-  id: string;
+  id: number;
+  vehicle_id: number;
+  trip_id?: number;
+  type: 'TOLL' | 'MAINTENANCE' | 'MISCELLANEOUS';
+  amount: number;
+  description?: string;
   date: string;
-  category: 'fuel' | 'maintenance' | 'toll' | 'insurance' | 'payout' | 'other';
-  amount: number; // in INR
-  description: string;
-  vehicleId?: string;
-  vehiclePlate?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MaintenanceLog {
-  id: string;
-  vehicleId: string;
-  vehiclePlate?: string;
-  serviceType: 'Routine' | 'Repair' | 'Inspection' | 'Breakdown';
-  description: string;
-  cost: number; // in INR
-  status: 'scheduled' | 'in-progress' | 'completed';
-  startDate: string;
-  completionDate?: string;
+  id: number;
+  vehicle_id: number;
+  type: string;
+  description?: string;
+  cost: number;
+  status: 'SCHEDULED' | 'IN_PROGRESS' | 'CLOSED';
+  created_at: string;
+  updated_at: string;
+  closed_at?: string;
 }
 
 export interface DashboardDTO {
-  kpis: {
-    totalVehicles: number;
-    availableVehicles: number;
-    vehiclesOnTrip: number;
-    vehiclesInShop: number;
-    activeTrips: number;
-    availableDrivers: number;
-    fleetUtilization: number; // percentage
-    revenue: number; // in INR
-    operationalCost: number; // in INR
-    vehicleROI: number; // average ROI percentage
-  };
-  charts: {
-    fleetUtilization: { date: string; value: number }[];
-    fuelEfficiency: { date: string; value: number }[];
-    revenueVsCost: { month: string; revenue: number; cost: number }[];
-    tripStatus: { name: string; value: number; color: string }[];
-    monthlyExpenses: { month: string; amount: number }[];
-    vehicleROI: { id: string; plateNumber: string; roi: number }[];
-  };
-  bottom: {
-    recentTrips: Trip[];
-    recentActivities: { id: string; time: string; text: string; type: 'info' | 'success' | 'warning' | 'error' }[];
-    upcomingLicenseExpiry: Driver[];
-    vehiclesInMaintenance: MaintenanceLog[];
-  };
+  total_vehicles: number;
+  available_vehicles: number;
+  vehicles_on_trip: number;
+  vehicles_in_shop: number;
+  total_drivers: number;
+  available_drivers: number;
+  active_trips: number;
+  completed_trips: number;
+  fleet_utilization: number;
+  fuel_efficiency: number;
+  operational_cost: number;
+  vehicle_roi: number;
+  total_revenue: number;
+  individual_vehicle_rois: Record<string, number>;
 }

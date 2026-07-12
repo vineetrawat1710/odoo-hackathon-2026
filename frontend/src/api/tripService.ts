@@ -1,26 +1,23 @@
-import type { Trip, MaintenanceLog } from '../types';
-import { DB } from '../mocks/db';
-
-const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms));
+import type { Trip } from '../types';
+import { apiClient } from './apiClient';
 
 export const tripService = {
   async getTrips(): Promise<Trip[]> {
-    await delay();
-    return DB.getTrips();
+    return apiClient.get<Trip[]>('/trips');
   },
-
-  async saveTrip(trip: Trip): Promise<Trip> {
-    await delay(700);
-    return DB.saveTrip(trip);
+  async getTripById(id: number): Promise<Trip | undefined> {
+    return apiClient.get<Trip>(`/trips/${id}`);
   },
-
-  async getMaintenanceLogs(): Promise<MaintenanceLog[]> {
-    await delay();
-    return DB.getMaintenanceLogs();
+  async saveTrip(trip: Partial<Trip>): Promise<Trip> {
+    return apiClient.post<Trip>('/trips', trip);
   },
-
-  async saveMaintenanceLog(log: MaintenanceLog): Promise<MaintenanceLog> {
-    await delay(650);
-    return DB.saveMaintenanceLog(log);
+  async dispatchTrip(id: number): Promise<Trip> {
+    return apiClient.post<Trip>(`/trips/${id}/dispatch`, {});
+  },
+  async completeTrip(id: number, data: { actual_distance: number, end_odometer: number }): Promise<Trip> {
+    return apiClient.post<Trip>(`/trips/${id}/complete`, data);
+  },
+  async cancelTrip(id: number): Promise<Trip> {
+    return apiClient.post<Trip>(`/trips/${id}/cancel`, {});
   }
 };

@@ -1,26 +1,18 @@
 import type { Expense, FuelLog } from '../types';
-import { DB } from '../mocks/db';
-
-const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms));
+import { apiClient } from './apiClient';
 
 export const expenseService = {
   async getExpenses(): Promise<Expense[]> {
-    await delay();
-    return DB.getExpenses();
+    return apiClient.get<Expense[]>('/finance/expenses');
   },
-
-  async saveExpense(expense: Expense): Promise<Expense> {
-    await delay(600);
-    return DB.saveExpense(expense);
+  async saveExpense(expense: Partial<Expense>): Promise<Expense> {
+    return apiClient.post<Expense>('/finance/expenses', expense);
   },
-
+  
   async getFuelLogs(): Promise<FuelLog[]> {
-    await delay();
-    return DB.getFuelLogs();
+    return apiClient.get<FuelLog[]>('/finance/fuel-logs');
   },
-
-  async saveFuelLog(log: FuelLog): Promise<FuelLog> {
-    await delay(700);
-    return DB.saveFuelLog(log);
+  async saveFuelLog(log: Partial<FuelLog>): Promise<FuelLog> {
+    return apiClient.post<FuelLog>('/finance/fuel-logs', log);
   }
 };

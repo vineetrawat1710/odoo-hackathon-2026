@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -13,6 +13,7 @@ import {
   LogOut,
   Compass
 } from 'lucide-react';
+import { apiClient } from '../../api/apiClient';
 
 export const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -28,6 +29,20 @@ export const Sidebar: React.FC = () => {
     { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
+
+  const [user, setUser] = useState<{name: string, role: string} | null>(null);
+
+  useEffect(() => {
+    apiClient.get<{name: string, role: string}>('/auth/me')
+      .then(res => setUser(res))
+      .catch(console.error);
+  }, []);
+
+  const formatRole = (r: string) => {
+    return r.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const initials = user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
 
   const handleLogout = () => {
     // Clear login flag or mock state
@@ -72,11 +87,11 @@ export const Sidebar: React.FC = () => {
       <div className="p-4 border-t border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-3 px-2 py-1.5">
           <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-800 text-sm">
-            AS
+            {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-900 truncate">Ayush Saini</p>
-            <p className="text-[10px] text-slate-500 truncate">Fleet Dispatcher</p>
+            <p className="text-xs font-semibold text-slate-900 truncate">{user?.name || 'Loading...'}</p>
+            <p className="text-[10px] text-slate-500 truncate">{user ? formatRole(user.role) : ''}</p>
           </div>
         </div>
         <button

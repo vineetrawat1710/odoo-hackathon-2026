@@ -16,34 +16,43 @@ export const FuelLogs: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ vehicleId: '', date: '', odometer: 0, fuelAmount: 0, cost: 0 });
+  const [form, setForm] = useState({ vehicle_id: '', date: '', liters: 0, cost: 0 });
 
   const loadData = async () => {
     setLoading(true);
-    const [f, v] = await Promise.all([expenseService.getFuelLogs(), vehicleService.getVehicles()]);
-    setLogs(f); setVehicles(v);
+    try {
+      const [f, v] = await Promise.all([expenseService.getFuelLogs(), vehicleService.getVehicles()]);
+      setLogs(f); setVehicles(v);
+    } catch (e: any) {
+      console.error(e);
+    }
     setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);
 
   const handleSave = async () => {
-    if (!form.vehicleId || !form.date || !form.fuelAmount || !form.cost) {
+    if (!form.vehicle_id || !form.date || !form.liters || !form.cost) {
       error('All fields are required.'); return;
     }
     setSaving(true);
-    const efficiency = form.odometer > 0 && form.fuelAmount > 0 ? Number((form.odometer / form.fuelAmount).toFixed(1)) : 0;
-    const log: FuelLog = { id: `f-${Date.now()}`, ...form, efficiency };
-    await expenseService.saveFuelLog(log);
-    success('Fuel log entry recorded. Expense auto-logged.');
-    setSaving(false); setShowForm(false);
-    setForm({ vehicleId: '', date: '', odometer: 0, fuelAmount: 0, cost: 0 });
-    loadData();
+    try {
+      await expenseService.saveFuelLog({ ...form, vehicle_id: Number(form.vehicle_id) });
+      success('Fuel log entry recorded. Expense auto-logged.');
+      setShowForm(false);
+      setForm({ vehicle_id: '', date: '', liters: 0, cost: 0 });
+      loadData();
+    } catch (e: any) {
+      error(e.message || 'Failed to save fuel log');
+    }
+    setSaving(false);
   };
 
-  const totalFuel = logs.reduce((s, l) => s + l.fuelAmount, 0);
-  const totalCost = logs.reduce((s, l) => s + l.cost, 0);
-  const avgEfficiency = logs.length > 0 ? (logs.reduce((s, l) => s + l.efficiency, 0) / logs.length).toFixed(1) : '0';
+  const totalFuel = logs.reduce((s, l) => s + Number(l.liters), 0);
+  const totalCost = logs.reduce((s, l) => s + Number(l.cost), 0);
+  const avgEfficiency = '0';
+
+  const getVehicleReg = (id: number) => vehicles.find(v => v.id === id)?.registration_number || id;
 
   const inputClass = 'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all';
   const labelClass = 'block text-xs font-semibold text-slate-700 mb-1';
@@ -52,7 +61,6 @@ export const FuelLogs: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -74,12 +82,10 @@ export const FuelLogs: React.FC = () => {
         </Card>
       </div>
 
-      {/* Controls */}
       <div className="flex justify-end">
         <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setShowForm(true)}>Log Fuel Entry</Button>
       </div>
 
-      {/* Table */}
       {logs.length === 0 ? (
         <EmptyState title="No fuel logs" description="Record your first fuel stop." actionText="Log Entry" onAction={() => setShowForm(true)} />
       ) : (
@@ -90,36 +96,26 @@ export const FuelLogs: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Vehicle</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Odometer</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Fuel (L)</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Cost</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Efficiency</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {logs.map(log => (
-                  <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-3.5 font-semibold text-slate-900">{log.vehiclePlate || log.vehicleId}</td>
-                    <td className="px-6 py-3.5 text-slate-600">{log.date}</td>
-                    <td className="px-6 py-3.5 text-slate-600">{log.odometer.toLocaleString()} km</td>
-                    <td className="px-6 py-3.5 text-slate-600">{log.fuelAmount} L</td>
-                    <td className="px-6 py-3.5 text-slate-600">₹{log.cost.toLocaleString()}</td>
-                    <td className="px-6 py-3.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                        log.efficiency >= 4 ? 'bg-emerald-50 text-emerald-700' : log.efficiency >= 3 ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700'
-                      }`}>
-                        {log.efficiency} km/L
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                    <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-3.5 font-semibold text-slate-900">{getVehicleReg(log.vehicle_id)}</td>
+                      <td className="px-6 py-3.5 text-slate-600">{log.date}</td>
+                      <td className="px-6 py-3.5 text-slate-600">{log.liters} L</td>
+                      <td className="px-6 py-3.5 text-slate-600">₹{Number(log.cost).toLocaleString()}</td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>
         </Card>
       )}
 
-      {/* Add Form */}
       <Dialog isOpen={showForm} onClose={() => setShowForm(false)} title="Log Fuel Entry"
         footerActions={<>
           <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
@@ -129,9 +125,9 @@ export const FuelLogs: React.FC = () => {
         <div className="space-y-4">
           <div>
             <label className={labelClass}>Vehicle *</label>
-            <select className={inputClass} value={form.vehicleId} onChange={e => setForm({ ...form, vehicleId: e.target.value })}>
+            <select className={inputClass} value={form.vehicle_id} onChange={e => setForm({ ...form, vehicle_id: e.target.value })}>
               <option value="">Select vehicle…</option>
-              {vehicles.map(v => <option key={v.id} value={v.id}>{v.plateNumber} - {v.model}</option>)}
+              {vehicles.map(v => <option key={v.id} value={v.id}>{v.registration_number}</option>)}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -139,15 +135,11 @@ export const FuelLogs: React.FC = () => {
               <label className={labelClass}>Date *</label>
               <input type="date" className={inputClass} value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
             </div>
-            <div>
-              <label className={labelClass}>Odometer (km)</label>
-              <input type="number" className={inputClass} value={form.odometer} onChange={e => setForm({ ...form, odometer: Number(e.target.value) })} />
-            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Fuel Amount (L) *</label>
-              <input type="number" className={inputClass} value={form.fuelAmount} onChange={e => setForm({ ...form, fuelAmount: Number(e.target.value) })} />
+              <input type="number" className={inputClass} value={form.liters} onChange={e => setForm({ ...form, liters: Number(e.target.value) })} />
             </div>
             <div>
               <label className={labelClass}>Cost (₹) *</label>

@@ -1,21 +1,14 @@
 import type { Driver } from '../types';
-import { DB } from '../mocks/db';
-
-const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms));
+import { apiClient } from './apiClient';
 
 export const driverService = {
   async getDrivers(): Promise<Driver[]> {
-    await delay();
-    return DB.getDrivers();
+    return apiClient.get<Driver[]>('/drivers');
   },
-
-  async saveDriver(driver: Driver): Promise<Driver> {
-    await delay(750);
-    return DB.saveDriver(driver);
+  async getDriverById(id: number): Promise<Driver | undefined> {
+    return apiClient.get<Driver>(`/drivers/${id}`);
   },
-
-  async deleteDriver(id: string): Promise<void> {
-    await delay(600);
-    DB.deleteDriver(id);
+  async saveDriver(driver: Partial<Driver>): Promise<Driver> {
+    return apiClient.post<Driver>('/drivers', driver);
   }
 };

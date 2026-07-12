@@ -26,6 +26,7 @@ export const Auth: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [org, setOrg] = useState('');
+  const [role, setRole] = useState('FLEET_MANAGER');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,23 +35,55 @@ export const Auth: React.FC = () => {
       return;
     }
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    localStorage.setItem('transitops_logged_in', 'true');
-    success('Authenticated successfully. Redirecting to dashboard…');
-    setTimeout(() => navigate('/dashboard'), 400);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || 'Invalid email or password');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('transitops_token', data.access_token);
+      localStorage.setItem('transitops_logged_in', 'true');
+      success('Authenticated successfully. Redirecting to dashboard…');
+      setTimeout(() => navigate('/dashboard'), 400);
+    } catch (err: any) {
+      error(err.message);
+      setIsLoading(false);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !password || !org) {
+    if (!name || !email || !password || !org || !role) {
       error('All fields are required for organization registration.');
       return;
     }
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    localStorage.setItem('transitops_logged_in', 'true');
-    success('Organization registered. Welcome to TransitOps!');
-    setTimeout(() => navigate('/dashboard'), 400);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || 'Registration failed');
+      }
+      
+      success('Organization registered. Please sign in!');
+      setView('login');
+      setIsLoading(false);
+    } catch (err: any) {
+      error(err.message);
+      setIsLoading(false);
+    }
   };
 
   const handleForgot = async (e: React.FormEvent) => {
@@ -123,6 +156,15 @@ export const Auth: React.FC = () => {
                 <div>
                   <label className={labelClass}>Organization Name</label>
                   <input type="text" className={inputClass} placeholder="TransitOps Logistics Pvt. Ltd." value={org} onChange={e => setOrg(e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelClass}>Role</label>
+                  <select className={inputClass} value={role} onChange={e => setRole(e.target.value)}>
+                    <option value="FLEET_MANAGER">Fleet Manager</option>
+                    <option value="DISPATCHER">Dispatcher</option>
+                    <option value="SAFETY_OFFICER">Safety Officer</option>
+                    <option value="FINANCIAL_ANALYST">Financial Analyst</option>
+                  </select>
                 </div>
               </>
             )}
