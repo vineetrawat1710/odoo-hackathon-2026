@@ -23,11 +23,11 @@ def read_trip(trip_id: int, db: Session = Depends(get_db), current_user = Depend
         raise HTTPException(status_code=404, detail="Trip not found")
     return trip
 
-@router.post("/{trip_id}/dispatch", response_model=Trip, dependencies=[Depends(require_roles(["dispatcher"]))])
+@router.post("/{trip_id}/dispatch", response_model=Trip, dependencies=[Depends(require_roles(["dispatcher", "fleet_manager"]))])
 def dispatch_existing_trip(trip_id: int, db: Session = Depends(get_db)):
     return dispatch_trip(db, trip_id)
 
-@router.post("/{trip_id}/complete", response_model=Trip, dependencies=[Depends(require_roles(["dispatcher"]))])
+@router.post("/{trip_id}/complete", response_model=Trip, dependencies=[Depends(require_roles(["dispatcher", "fleet_manager"]))])
 def complete_existing_trip(trip_id: int, payload: TripComplete, db: Session = Depends(get_db)):
     return complete_trip(db, trip_id, payload)
 

@@ -30,8 +30,8 @@ def upgrade() -> None:
     sa.Column('contact_number', sa.String(), nullable=False),
     sa.Column('safety_score', sa.Numeric(precision=5, scale=2), nullable=False),
     sa.Column('status', sa.Enum('AVAILABLE', 'ON_TRIP', 'OFF_DUTY', 'SUSPENDED', name='driverstatus'), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_driver_id'), 'driver', ['id'], unique=False)
@@ -42,8 +42,8 @@ def upgrade() -> None:
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('role', sa.Enum('FLEET_MANAGER', 'DISPATCHER', 'SAFETY_OFFICER', 'FINANCIAL_ANALYST', name='roleenum'), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
@@ -58,8 +58,8 @@ def upgrade() -> None:
     sa.Column('acquisition_cost', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('status', sa.Enum('AVAILABLE', 'ON_TRIP', 'IN_SHOP', 'RETIRED', name='vehiclestatus'), nullable=False),
     sa.Column('region', sa.String(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_vehicle_id'), 'vehicle', ['id'], unique=False)
@@ -71,8 +71,8 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('cost', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('status', sa.Enum('ACTIVE', 'CLOSED', name='maintenancestatus'), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.Column('closed_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['vehicle_id'], ['vehicle.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -92,8 +92,8 @@ def upgrade() -> None:
     sa.Column('status', sa.Enum('DRAFT', 'DISPATCHED', 'COMPLETED', 'CANCELLED', name='tripstatus'), nullable=False),
     sa.Column('revenue', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('created_by_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.Column('dispatched_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('cancelled_at', sa.DateTime(timezone=True), nullable=True),
@@ -111,8 +111,8 @@ def upgrade() -> None:
     sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('date', sa.Date(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.ForeignKeyConstraint(['trip_id'], ['trip.id'], ),
     sa.ForeignKeyConstraint(['vehicle_id'], ['vehicle.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -125,8 +125,8 @@ def upgrade() -> None:
     sa.Column('liters', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('cost', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('date', sa.Date(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
     sa.ForeignKeyConstraint(['trip_id'], ['trip.id'], ),
     sa.ForeignKeyConstraint(['vehicle_id'], ['vehicle.id'], ),
     sa.PrimaryKeyConstraint('id')
