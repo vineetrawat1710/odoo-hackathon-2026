@@ -27,7 +27,7 @@ class Trip(Base):
     status = Column(SQLEnum(TripStatus), default=TripStatus.DRAFT, nullable=False)
     revenue = Column(Numeric(12, 2), default=0.0, nullable=False)
     
-    created_by_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     dispatched_at = Column(DateTime(timezone=True), nullable=True)
