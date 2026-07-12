@@ -20,7 +20,7 @@ const ProtectedRoute: React.FC = () => {
   const isLoggedIn = localStorage.getItem('transitops_logged_in') === 'true';
   if (!isLoggedIn) return <Navigate to="/login" replace />;
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-transparent">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden ml-64">
         <Navbar />

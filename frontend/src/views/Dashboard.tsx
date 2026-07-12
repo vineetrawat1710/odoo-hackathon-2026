@@ -53,16 +53,16 @@ export const Dashboard: React.FC = () => {
   }
 
   const kpiCards = [
-    { label: 'Total Vehicles', value: data.total_vehicles, icon: Truck, color: 'text-slate-700', bg: 'bg-slate-50' },
-    { label: 'Available', value: data.available_vehicles, icon: CheckCircle, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'On Trip', value: data.vehicles_on_trip, icon: Navigation, color: 'text-blue-700', bg: 'bg-blue-50' },
-    { label: 'In Shop', value: data.vehicles_in_shop, icon: Wrench, color: 'text-amber-700', bg: 'bg-amber-50' },
-    { label: 'Active Trips', value: data.active_trips, icon: Activity, color: 'text-indigo-700', bg: 'bg-indigo-50' },
-    { label: 'Available Drivers', value: data.available_drivers, icon: Users, color: 'text-cyan-700', bg: 'bg-cyan-50' },
-    { label: 'Fleet Utilization', value: `${data.fleet_utilization}%`, icon: TrendingUp, color: 'text-violet-700', bg: 'bg-violet-50' },
-    { label: 'Revenue', value: `₹${(data.total_revenue / 1000).toFixed(1)}K`, icon: IndianRupee, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'Operational Cost', value: `₹${(data.operational_cost / 1000).toFixed(1)}K`, icon: BarChart3, color: 'text-rose-700', bg: 'bg-rose-50' },
-    { label: 'Avg. Vehicle ROI', value: `${data.vehicle_roi}%`, icon: TrendingUp, color: 'text-blue-700', bg: 'bg-blue-50' },
+    { label: 'Total Vehicles', value: data.total_vehicles, icon: Truck, color: 'text-blue-600', bg: 'bg-blue-50 border border-blue-100/80 shadow-2xs' },
+    { label: 'Available', value: data.available_vehicles, icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50 border border-emerald-100/80 shadow-2xs' },
+    { label: 'On Trip', value: data.vehicles_on_trip, icon: Navigation, color: 'text-indigo-600', bg: 'bg-indigo-50 border border-indigo-100/80 shadow-2xs' },
+    { label: 'In Shop', value: data.vehicles_in_shop, icon: Wrench, color: 'text-amber-600', bg: 'bg-amber-50 border border-amber-100/80 shadow-2xs' },
+    { label: 'Active Trips', value: data.active_trips, icon: Activity, color: 'text-violet-600', bg: 'bg-violet-50 border border-violet-100/80 shadow-2xs' },
+    { label: 'Available Drivers', value: data.available_drivers, icon: Users, color: 'text-cyan-600', bg: 'bg-cyan-50 border border-cyan-100/80 shadow-2xs' },
+    { label: 'Fleet Utilization', value: `${data.fleet_utilization}%`, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50 border border-blue-100/80 shadow-2xs' },
+    { label: 'Revenue', value: `₹${(data.total_revenue / 1000).toFixed(1)}K`, icon: IndianRupee, color: 'text-emerald-600', bg: 'bg-emerald-50 border border-emerald-100/80 shadow-2xs' },
+    { label: 'Operational Cost', value: `₹${(data.operational_cost / 1000).toFixed(1)}K`, icon: BarChart3, color: 'text-rose-600', bg: 'bg-rose-50 border border-rose-100/80 shadow-2xs' },
+    { label: 'Avg. Vehicle ROI', value: `${data.vehicle_roi}%`, icon: TrendingUp, color: 'text-sky-600', bg: 'bg-sky-50 border border-sky-100/80 shadow-2xs' },
   ];
 
   const getVehicleReg = (id: number) => vehicles.find(v => v.id === id)?.registration_number || `ID: ${id}`;
@@ -74,10 +74,12 @@ export const Dashboard: React.FC = () => {
 
   const statusBadge = (status: string) => {
     const s: Record<string, string> = {
-      DRAFT: 'bg-indigo-50 text-indigo-700', DISPATCHED: 'bg-blue-50 text-blue-700',
-      COMPLETED: 'bg-emerald-50 text-emerald-700', CANCELLED: 'bg-slate-100 text-slate-600'
+      DRAFT: 'bg-indigo-50 text-indigo-700 border border-indigo-200/60 shadow-2xs',
+      DISPATCHED: 'bg-blue-50 text-blue-700 border border-blue-200/60 shadow-2xs',
+      COMPLETED: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-2xs',
+      CANCELLED: 'bg-slate-100 text-slate-600 border border-slate-200/60'
     };
-    return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${s[status]}`}>{status}</span>;
+    return <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${s[status] || 'bg-slate-100 text-slate-600'}`}>{status}</span>;
   };
 
   return (
@@ -87,15 +89,15 @@ export const Dashboard: React.FC = () => {
         {kpiCards.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <Card key={idx}>
-              <CardContent className="p-4">
+            <Card key={idx} className="hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4.5">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{kpi.label}</p>
-                    <p className="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{kpi.value}</p>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{kpi.label}</p>
+                    <p className="text-2xl font-extrabold text-slate-900 mt-1.5 tracking-tight">{kpi.value}</p>
                   </div>
-                  <div className={`p-2 rounded-lg ${kpi.bg}`}>
-                    <Icon className={`h-4.5 w-4.5 ${kpi.color}`} />
+                  <div className={`p-2.5 rounded-xl ${kpi.bg}`}>
+                    <Icon className={`h-5 w-5 ${kpi.color}`} />
                   </div>
                 </div>
               </CardContent>

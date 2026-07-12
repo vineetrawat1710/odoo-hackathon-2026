@@ -9,13 +9,14 @@
   --color-brand-700: #1e40af;
 }
 
-/* ─── Base ───────────────────────────────────────────────────────────────── */
+/* ─── Base & Premium Light Theme ─────────────────────────────────────────── */
 html {
   font-family: var(--font-sans);
 }
 
 body {
-  background-color: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #eff6ff 100%);
+  background-attachment: fixed;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,8 +24,8 @@ body {
 
 /* ─── Custom Scrollbars ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -33,76 +34,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* ─── Custom Keyframe Animations ─────────────────────────────────────────── */
-@keyframes slide-in-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-
-@keyframes slide-in-bottom {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes scale-up-center {
-  from { transform: scale(0.95); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-.animate-slide-in-bottom {
-  animation: slide-in-bottom 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.18s ease-out both;
-}
-
-.animate-scale-up-center {
-  animation: scale-up-center 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-/* ─── Focus & Selection ──────────────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-::selection {
-  background-color: #bfdbfe;
-  color: #1e3a8a;
-}
-
-
-/* ─── Custom Scrollbars ───────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -132,11 +64,11 @@ body {
 
 @layer utilities {
   .animate-slide-in-right {
-    animation: slide-in-right 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation: slide-in-right 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-slide-in-bottom {
-    animation: slide-in-bottom 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation: slide-in-bottom 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-fade-in {
@@ -144,19 +76,26 @@ body {
   }
 
   .animate-scale-up-center {
-    animation: scale-up-center 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation: scale-up-center 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
   }
 }
 
-/* ─── Focus Ring ─────────────────────────────────────────────────────────── */
+/* ─── Focus Ring & Selection ─────────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* ─── Selection ──────────────────────────────────────────────────────────── */
 ::selection {
-  background-color: #bfdbfe;
-  color: #1e3a8a;
+  background-color: #dbeafe;
+  color: #1e40af;
 }
+

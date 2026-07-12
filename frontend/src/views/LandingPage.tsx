@@ -57,20 +57,20 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-sans selection:bg-blue-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 text-slate-800 font-sans selection:bg-blue-100 flex flex-col justify-between">
       
       {/* Navbar header */}
-      <header className="border-b border-slate-100 py-4 px-6 md:px-12 flex justify-between items-center bg-white sticky top-0 z-30">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-blue-600 text-white p-1.5 rounded-lg">
-            <Compass className="h-5 w-5" />
+      <header className="border-b border-slate-200/80 py-4 px-6 md:px-12 flex justify-between items-center bg-white/85 backdrop-blur-xl sticky top-0 z-30 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white p-2 rounded-xl shadow-md shadow-blue-500/25">
+            <Compass className="h-5 w-5 animate-pulse" />
           </div>
           <div>
-            <span className="text-base font-bold text-slate-900 tracking-tight">TransitOps</span>
-            <span className="text-[9px] text-slate-400 font-semibold block uppercase tracking-wider -mt-1">Fleet Management</span>
+            <span className="text-lg font-extrabold text-slate-900 tracking-tight">TransitOps</span>
+            <span className="text-[9px] text-blue-600 font-bold block uppercase tracking-wider -mt-1">Fleet OS</span>
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3.5">
           <Button variant="outline" size="sm" onClick={() => navigate('/login')}>
             Sign In
           </Button>
@@ -81,19 +81,19 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* Main hero */}
-      <section className="py-20 px-6 md:px-12 max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold mb-6">
-          <Sparkles className="h-3.5 w-3.5" />
-          Enterprise Fleet Management Redefined
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50/90 text-blue-700 rounded-full text-xs font-bold mb-8 border border-blue-200/60 shadow-xs animate-bounce">
+          <Sparkles className="h-4 w-4" />
+          Enterprise Fleet Management & Telematics Redefined
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto">
-          Operational control, resource scheduling, & telematics in a unified portal.
+        <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto">
+          Operational control, resource scheduling, & telematics in a <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">unified portal.</span>
         </h1>
-        <p className="text-lg text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-          Manage trucks, schedule long-distance route dispatches, track fuel metrics, and audit ledger items in a high-fidelity workspace designed for professional logistics teams.
+        <p className="text-lg font-medium text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
+          Manage trucks, schedule long-distance dispatches, track real-time fuel metrics, and audit ledger items in a high-fidelity workspace tailored for modern supply chain teams.
         </p>
         <div className="flex justify-center gap-4 mt-10">
-          <Button variant="primary" size="lg" rightIcon={<ArrowRight className="h-4 w-4" />} onClick={() => navigate('/login')}>
+          <Button variant="primary" size="lg" rightIcon={<ArrowRight className="h-4.5 w-4.5" />} onClick={() => navigate('/login')}>
             Enter Platform Demo
           </Button>
           <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>

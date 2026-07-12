@@ -38,17 +38,17 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-8 fixed top-0 right-0 left-64 z-10">
+    <header className="h-16 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl flex items-center justify-between px-8 fixed top-0 right-0 left-64 z-10 shadow-2xs">
       {/* Title */}
       <div>
-        <h1 className="text-lg font-semibold text-slate-900 tracking-tight">{getPageTitle()}</h1>
+        <h1 className="text-lg font-extrabold text-slate-900 tracking-tight">{getPageTitle()}</h1>
       </div>
 
       {/* Right side controls */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
         
         {/* Status Indicator */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100 text-emerald-700 text-xs font-medium">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-emerald-50/90 rounded-full border border-emerald-200/80 text-emerald-700 text-xs font-semibold shadow-xs">
           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
           Telematics Online
         </div>
@@ -57,7 +57,7 @@ export const Navbar: React.FC = () => {
         <button
           onClick={handleSync}
           disabled={isRefreshing}
-          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all focus:outline-none disabled:opacity-50"
+          className="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl transition-all focus:outline-none disabled:opacity-50 border border-transparent hover:border-blue-200/60"
           title="Synchronize Data"
         >
           <RefreshCw className={`h-4.5 w-4.5 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
@@ -67,10 +67,10 @@ export const Navbar: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all relative focus:outline-none"
+            className="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl transition-all relative focus:outline-none border border-transparent hover:border-blue-200/60"
           >
             <Bell className="h-4.5 w-4.5" />
-            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 ring-2 ring-white animate-pulse"></span>
           </button>
 
           {/* Notifications Dropdown */}
@@ -80,26 +80,26 @@ export const Navbar: React.FC = () => {
                 className="fixed inset-0 z-30" 
                 onClick={() => setShowNotifications(false)}
               />
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-40 py-2 animate-fade-in">
-                <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-800">Operational Alerts</span>
-                  <span className="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium">2 New</span>
+              <div className="absolute right-0 mt-2.5 w-80 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-300/40 z-40 py-2 animate-fade-in overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-slate-100/80 flex items-center justify-between bg-slate-50/50">
+                  <span className="text-xs font-bold text-slate-900">Operational Alerts</span>
+                  <span className="text-[10px] text-blue-600 bg-blue-100/80 px-2 py-0.5 rounded-full font-bold">2 New</span>
                 </div>
-                <div className="divide-y divide-slate-50">
+                <div className="divide-y divide-slate-100/60">
                   {mockAlerts.map(alert => (
-                    <div key={alert.id} className="px-4 py-3 hover:bg-slate-50/50 transition-colors">
-                      <p className="text-xs text-slate-700 leading-normal">{alert.text}</p>
-                      <span className="text-[10px] text-slate-400 mt-1 block">{alert.time}</span>
+                    <div key={alert.id} className="px-4 py-3 hover:bg-blue-50/40 transition-colors">
+                      <p className="text-xs font-medium text-slate-700 leading-normal">{alert.text}</p>
+                      <span className="text-[10px] font-semibold text-slate-400 mt-1 block">{alert.time}</span>
                     </div>
                   ))}
                 </div>
-                <div className="px-4 py-2 border-t border-slate-100 text-center">
+                <div className="px-4 py-2 border-t border-slate-100/80 text-center bg-slate-50/50">
                   <button 
                     onClick={() => {
                       setShowNotifications(false);
                       success('All notifications marked read');
                     }}
-                    className="text-[10px] text-blue-600 hover:text-blue-700 font-semibold focus:outline-none"
+                    className="text-[11px] text-blue-600 hover:text-blue-700 font-bold focus:outline-none"
                   >
                     Clear all alerts
                   </button>
@@ -110,8 +110,10 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Security / Role Indicator */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium border-l border-slate-200 pl-5">
-          <Shield className="h-4 w-4 text-blue-500" />
+        <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold border-l border-slate-200/80 pl-5">
+          <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+            <Shield className="h-4 w-4" />
+          </div>
           <span>Dispatcher Console</span>
         </div>
       </div>

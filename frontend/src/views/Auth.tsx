@@ -107,28 +107,30 @@ export const Auth: React.FC = () => {
     else navigate('/forgot-password');
   };
 
-  const inputClass = 'w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400';
-  const labelClass = 'block text-xs font-semibold text-slate-700 mb-1.5';
+  const inputClass = 'w-full px-4 py-3 text-sm font-medium border border-slate-200/90 rounded-xl bg-slate-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-slate-400 shadow-2xs';
+  const labelClass = 'block text-xs font-bold text-slate-700 mb-1.5 tracking-wide uppercase';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 flex items-center justify-center px-4 py-12 font-sans selection:bg-blue-100">
       <div className="w-full max-w-md">
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2.5 mb-4 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="bg-blue-600 text-white p-2 rounded-xl">
-              <Compass className="h-6 w-6" />
+          <div className="inline-flex items-center gap-3 mb-3 cursor-pointer hover:scale-105 transition-transform" onClick={() => navigate('/')}>
+            <div className="bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white p-2.5 rounded-2xl shadow-lg shadow-blue-500/30">
+              <Compass className="h-6 w-6 animate-pulse" />
             </div>
-            <div className="text-left">
-              <span className="text-xl font-bold text-slate-900 tracking-tight">TransitOps</span>
-              <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider -mt-1">Fleet Management Portal</span>
-            </div>
+            <span className="text-2xl font-black text-slate-900 tracking-tight">TransitOps</span>
           </div>
+          <p className="text-xs font-semibold text-slate-500 max-w-xs mx-auto">
+            {view === 'login' ? 'Sign in to access real-time fleet telematics & dispatch' : view === 'signup' ? 'Create a unified workspace for your logistics organization' : 'Enter your email to recover your operator account'}
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-3xl shadow-xl shadow-blue-500/10 relative overflow-hidden">
+          {/* Subtle top gradient bar */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500" />
           
           {/* Header */}
           <div className="px-8 pt-8 pb-2">

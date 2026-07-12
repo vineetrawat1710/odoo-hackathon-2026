@@ -51,15 +51,15 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 h-screen flex flex-col fixed left-0 top-0 z-20">
+    <aside className="w-64 bg-white/85 backdrop-blur-xl border-r border-slate-200/80 h-screen flex flex-col fixed left-0 top-0 z-20 shadow-xs">
       {/* Brand Header */}
-      <div className="h-16 border-b border-slate-200 flex items-center px-6 gap-2.5">
-        <div className="bg-blue-600 text-white p-1.5 rounded-lg">
-          <Compass className="h-5 w-5" />
+      <div className="h-16 border-b border-slate-200/80 flex items-center px-6 gap-3">
+        <div className="bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white p-2 rounded-xl shadow-md shadow-blue-500/25">
+          <Compass className="h-5 w-5 animate-pulse" />
         </div>
         <div>
-          <span className="text-base font-bold text-slate-900 tracking-tight">TransitOps</span>
-          <span className="text-[10px] text-blue-600 font-semibold block uppercase tracking-wider -mt-1">Fleet OS</span>
+          <span className="text-base font-extrabold text-slate-900 tracking-tight block">TransitOps</span>
+          <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider block -mt-1">Fleet OS</span>
         </div>
       </div>
 
@@ -70,33 +70,33 @@ export const Sidebar: React.FC = () => {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+              `flex items-center gap-3.5 px-3.5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
                 isActive
-                  ? 'bg-blue-50/70 text-blue-700 border-l-2 border-blue-600 rounded-l-none'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                  : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 hover:translate-x-0.5'
               }`
             }
           >
-            <item.icon className="h-4.5 w-4.5" />
+            <item.icon className="h-4.5 w-4.5 shrink-0" />
             {item.name}
           </NavLink>
         ))}
       </nav>
 
       {/* Footer / User Profile */}
-      <div className="p-4 border-t border-slate-200 bg-slate-50/50">
-        <div className="flex items-center gap-3 px-2 py-1.5">
-          <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-800 text-sm">
+      <div className="p-4 border-t border-slate-200/80 bg-slate-50/70">
+        <div className="flex items-center gap-3 px-2 py-1.5 rounded-xl bg-white/80 border border-slate-200/60 shadow-2xs">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white text-xs shadow-xs">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-900 truncate">{user?.name || 'Loading...'}</p>
-            <p className="text-[10px] text-slate-500 truncate">{user ? formatRole(user.role) : ''}</p>
+            <p className="text-xs font-bold text-slate-900 truncate">{user?.name || 'Loading...'}</p>
+            <p className="text-[10px] font-semibold text-blue-600 truncate">{user ? formatRole(user.role) : ''}</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-2 py-2 mt-3 text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2.5 px-3 py-2 mt-3 text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50/80 rounded-xl transition-all border border-transparent hover:border-rose-200/60"
         >
           <LogOut className="h-4 w-4" />
           Logout System
